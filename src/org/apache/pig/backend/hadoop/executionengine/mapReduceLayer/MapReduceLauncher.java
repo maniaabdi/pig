@@ -29,6 +29,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
 
@@ -649,6 +653,12 @@ public class MapReduceLauncher extends Launcher {
         comp.aggregateScalarsFiles();
         comp.connectSoftLink();
         MROperPlan plan = comp.getMRPlan();
+
+        /*KARIZ B*/
+	BufferedWriter writer = new BufferedWriter(new FileWriter("/tmp/executionplan.txt", true));
+	writer.append(plan.toString());
+        writer.close();
+        /*KARIZ E*/
 
         //display the warning message(s) from the MRCompiler
         comp.getMessageCollector().logMessages(MessageType.Warning, aggregateWarning, log);

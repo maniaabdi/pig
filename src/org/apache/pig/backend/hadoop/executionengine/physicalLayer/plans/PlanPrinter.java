@@ -60,13 +60,22 @@ import org.apache.pig.impl.util.MultiMap;
 public class PlanPrinter<O extends Operator, P extends OperatorPlan<O>> extends
         PlanVisitor<O, P> {
 
-    String TAB1 = "    ";
+/*    String TAB1 = "    ";
 
     String TABMore = "|   ";
 
     String LSep = "|\n|---";
 
     String USep = "|   |\n|   ";
+*/
+    String TAB1 = "{";
+
+    String TABMore = "{";
+
+    String LSep = "{";
+
+    String USep = "{";
+
 
     int levelCntr = -1;
 

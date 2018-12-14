@@ -56,41 +56,41 @@ public class MRPrinter extends MROpPlanVisitor {
 
     @Override
     public void visitMROp(MapReduceOper mr) throws VisitorException {
-        mStream.println("MapReduce node " + mr.getOperatorKey().toString());
+        mStream.println("MapReduce node: {" + mr.getOperatorKey().toString());
         if(mr instanceof NativeMapReduceOper) {
             mStream.println(((NativeMapReduceOper)mr).getCommandString());
-            mStream.println("--------");
+            mStream.println("}");
             mStream.println();
             return;
         }
         if (mr.mapPlan != null && mr.mapPlan.size() > 0) {
-            mStream.println("Map Plan");
+            mStream.println("Map Plan: {");
             PlanPrinter<PhysicalOperator, PhysicalPlan> printer = new PlanPrinter<PhysicalOperator, PhysicalPlan>(mr.mapPlan, mStream);
             printer.setVerbose(isVerbose);
             printer.visit();
-            mStream.println("--------");
+            mStream.println("}\n");
         }
         if (mr.combinePlan != null && mr.combinePlan.size() > 0) {
-            mStream.println("Combine Plan");
+            mStream.println("Combine Plan: {");
             PlanPrinter<PhysicalOperator, PhysicalPlan> printer = new PlanPrinter<PhysicalOperator, PhysicalPlan>(mr.combinePlan, mStream);
             printer.setVerbose(isVerbose);
             printer.visit();
-            mStream.println("--------");
+            mStream.println("}\n");
         }
         if (mr.reducePlan != null && mr.reducePlan.size() > 0) {
-            mStream.println("Reduce Plan");
+            mStream.println("Reduce Plan: {");
             PlanPrinter<PhysicalOperator, PhysicalPlan> printer = new PlanPrinter<PhysicalOperator, PhysicalPlan>(mr.reducePlan, mStream);
             printer.setVerbose(isVerbose);
             printer.visit();
-            mStream.println("--------");
+            mStream.println("}\n");
         }
-        mStream.println("Global sort: " + mr.isGlobalSort());
+        mStream.println("Global sort: {" + mr.isGlobalSort() + "}\n");
         if (mr.getQuantFile() != null) {
-            mStream.println("Quantile file: " + mr.getQuantFile());
+            mStream.println("Quantile file: {" + mr.getQuantFile() + "}\n");
         }
         if (mr.getUseSecondaryKey())
-            mStream.println("Secondary sort: " + mr.getUseSecondaryKey());
-        mStream.println("----------------");
+            mStream.println("Secondary sort: {" + mr.getUseSecondaryKey() + "}\n");
+        mStream.println("}");
         mStream.println("");
     }
 }
