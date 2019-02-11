@@ -71,7 +71,7 @@ public abstract class JobStats extends Operator {
     protected long hdfsBytesWritten = 0;
 
     private String errorMsg;
-
+    private String _name;
     private Exception exception = null;
 
     protected JobStats(String name, JobGraph plan) {
@@ -81,6 +81,10 @@ public abstract class JobStats extends Operator {
     }
 
     public abstract String getJobId();
+
+    public String getJobName() {
+	return _name;
+    }
 
     public void setConf(Configuration conf) {
         if (conf == null) {
@@ -174,7 +178,6 @@ public abstract class JobStats extends Operator {
     }
 
     public abstract String getDisplayString();
-
 
     /**
      * Calculate the median value from the given array

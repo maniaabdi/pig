@@ -91,6 +91,25 @@ import org.apache.pig.tools.pigstats.mapreduce.MRJobStats;
 import org.apache.pig.tools.pigstats.mapreduce.MRPigStatsUtil;
 import org.apache.pig.tools.pigstats.mapreduce.MRScriptState;
 
+
+/*KARIZ B*/
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.apache.http.HttpResponse;
+import org.apache.http.NameValuePair;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.message.BasicNameValuePair;
+/*KARIZ E*/
+
+
+
 /**
  * Main class that launches pig for Map Reduce
  *
@@ -277,11 +296,12 @@ public class MapReduceLauncher extends Launcher {
             String jobTrackerLoc;
             JobConf jobConf = jobsWithoutIds.get(0).getJobConf();
             try {
-                String port = jobConf.get(MRConfiguration.JOB_TRACKER_HTTP_ADDRESS);
-                String jobTrackerAdd = jobConf.get(MRConfiguration.JOB_TRACKER);
+                //String port = jobConf.get(MRConfiguration.JOB_TRACKER_HTTP_ADDRESS);
+                //String jobTrackerAdd = jobConf.get(MRConfiguration.JOB_TRACKER);
 
-                jobTrackerLoc = jobTrackerAdd.substring(0,jobTrackerAdd.indexOf(":"))
-                        + port.substring(port.indexOf(":"));
+                //jobTrackerLoc = jobTrackerAdd.substring(0,jobTrackerAdd.indexOf(":"))
+                //        + port.substring(port.indexOf(":"));
+                jobTrackerLoc="sp-hd-1:50030";
             }
             catch(Exception e){
                 // Could not get the job tracker location, most probably we are running in local mode.
@@ -645,6 +665,46 @@ public class MapReduceLauncher extends Launcher {
         }
     }
 
+    /*KARIZ B*/
+    public void AlertCache(MROperPlan plan) {
+	    String url = "http://127.0.0.1:9080";
+	    String USER_AGENT = "Mozilla/5.0";
+
+	    HttpClient client = new DefaultHttpClient();
+	    HttpPost post = new HttpPost(url);
+
+	    // add header
+	    post.setHeader("User-Agent", USER_AGENT);
+
+	    List<NameValuePair> urlParameters = new ArrayList<NameValuePair>();
+	    urlParameters.add(new BasicNameValuePair("dag", plan.toString()));
+
+
+            try {
+		post.setEntity(new UrlEncodedFormEntity(urlParameters));
+
+		HttpResponse response = client.execute(post);
+		System.out.println("\nSending 'POST' request to URL : " + url);
+		System.out.println("Post parameters : " + post.getEntity());
+		System.out.println("Response Code : " +
+				response.getStatusLine().getStatusCode());
+
+		BufferedReader rd = new BufferedReader(
+				new InputStreamReader(response.getEntity().getContent()));
+
+		StringBuffer result = new StringBuffer();
+		String line = "";
+		while ((line = rd.readLine()) != null) {
+			result.append(line);
+		}
+
+		System.out.println(result.toString());
+            } catch(Exception e) {
+        	System.out.println("ERROR" + e.toString());
+    	    }
+    }
+    /*KARIZ E*/
+
     public MROperPlan compile(
             PhysicalPlan php,
             PigContext pc) throws PlanException, IOException, VisitorException {
@@ -655,9 +715,10 @@ public class MapReduceLauncher extends Launcher {
         MROperPlan plan = comp.getMRPlan();
 
         /*KARIZ B*/
-	BufferedWriter writer = new BufferedWriter(new FileWriter("/tmp/executionplan.txt", true));
-	writer.append(plan.toString());
-        writer.close();
+	//BufferedWriter writer = new BufferedWriter(new FileWriter("/tmp/executionplan.txt", true));
+	//writer.append(plan.toString());
+        //writer.close();
+        AlertCache(plan);
         /*KARIZ E*/
 
         //display the warning message(s) from the MRCompiler

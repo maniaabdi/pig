@@ -26,6 +26,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import java.io.File;
+import java.io.FileWriter;
+import java.io.FileNotFoundException;
+import java.io.PrintWriter;
+
+import java.io.*;
+import java.net.*;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.hadoop.mapred.JobClient;
@@ -205,9 +213,80 @@ public final class SimplePigStats extends PigStats {
 
         return js;
     }
+    
+    /*KARIZ B*/
+    void dumpStats() {
+        try {	
+	    String sentence;
+	    String modifiedSentence;
+	    Socket clientSocket = new Socket("sp-hd-1", 4964);
+	    DataOutputStream outToServer = new DataOutputStream(clientSocket.getOutputStream());
+	    BufferedReader inFromServer = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+	    sentence = getCSVString();
+            outToServer.writeBytes("lenght:" + sentence.length());
+	    modifiedSentence = inFromServer.readLine();
+            System.out.println(sentence);
+	    outToServer.writeBytes(sentence); 
+	    modifiedSentence = inFromServer.readLine();
+            if (modifiedSentence == "done") {
+	    	clientSocket.close();
+	    }
+        } catch (IOException e) 
+        {
+             System.out.println(e.getMessage());
+        }
+    }
+
+    public String getCSVString() {
+        if (returnCode == ReturnCode.UNKNOWN) {
+            LOG.warn("unknown return code, can't display the results");
+            return "";
+        }
+        if (pigContext == null) {
+            LOG.warn("unknown exec type, don't display the results");
+            return "";
+        }
+
+        SimpleDateFormat sdf = new SimpleDateFormat(DATE_FORMAT);
+        StringBuilder sb = new StringBuilder();
+        sb.append("\nHadoopVersion,PigVersion,UserId,StartedAt,FinishedAt,Features\n");
+        sb.append(getHadoopVersion()).append(",").append(getPigVersion()).append(",")
+        .append(userId).append(",")
+        .append(sdf.format(new Date(startTime))).append(",")
+        .append(sdf.format(new Date(endTime))).append(",")
+        .append(getFeatures()).append(",");
+        sb.append("\n");
+
+        if (returnCode == ReturnCode.SUCCESS
+                || returnCode == ReturnCode.PARTIAL_FAILURE) {
+            
+            sb.append(MRJobStats.SUCCESS_HEADER_CSV).append("\n");
+            List<JobStats> arr = jobPlan.getSuccessfulJobs();
+            for (JobStats js : arr) {
+                sb.append(js.getDisplayString().replace("\t",","));
+            }
+            sb.append("\n");
+        }
+        if (returnCode == ReturnCode.FAILURE
+                || returnCode == ReturnCode.PARTIAL_FAILURE) {
+            sb.append("Failed Jobs:\n");
+            sb.append(MRJobStats.FAILURE_HEADER).append("\n");
+            List<JobStats> arr = jobPlan.getFailedJobs();
+            for (JobStats js : arr) {
+                sb.append(js.getJobName() + "," + js.getDisplayString().replace("\t",","));
+            }
+            sb.append("\n");
+        }
+
+        return sb.toString();
+    }
+    /*KARIZ E*/
+
 
     void display() {
         LOG.info(getDisplayString());
+        /*KARIZ Open a CSV file append to it*/
+	dumpStats();
     }
 
     @Override

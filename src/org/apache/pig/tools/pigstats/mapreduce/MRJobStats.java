@@ -70,6 +70,12 @@ public final class MRJobStats extends JobStats {
         super(name, plan);
     }
 
+    public static final String SUCCESS_HEADER_CSV = "JobId,Maps,Reduces," +
+            "MaxMapTime,MinMapTime,AvgMapTime,MedianMapTime,MaxReduceTime," +
+            "MinReduceTime,AvgReduceTime,MedianReducetime,Alias,Feature,Outputs";
+
+    public static final String FAILURE_HEADER_CSV = "JobId,Alias,Feature,Message,Outputs";
+
     public static final String SUCCESS_HEADER = "JobId\tMaps\tReduces\t" +
             "MaxMapTime\tMinMapTime\tAvgMapTime\tMedianMapTime\tMaxReduceTime\t" +
             "MinReduceTime\tAvgReduceTime\tMedianReducetime\tAlias\tFeature\tOutputs";
@@ -247,6 +253,7 @@ public final class MRJobStats extends JobStats {
         }
         sb.append("\t");
     }
+
 
     @Override
     public String getDisplayString() {
