@@ -72,9 +72,9 @@ public final class MRJobStats extends JobStats {
 
     public static final String SUCCESS_HEADER_CSV = "JobId,Maps,Reduces," +
             "MaxMapTime,MinMapTime,AvgMapTime,MedianMapTime,MaxReduceTime," +
-            "MinReduceTime,AvgReduceTime,MedianReducetime,Alias,Feature,Outputs";
+            "MinReduceTime,AvgReduceTime,MedianReducetime,Alias,Feature,Outputs,";
 
-    public static final String FAILURE_HEADER_CSV = "JobId,Alias,Feature,Message,Outputs";
+    public static final String FAILURE_HEADER_CSV = "JobId,Alias,Feature,Message,Outputs,";
 
     public static final String SUCCESS_HEADER = "JobId\tMaps\tReduces\t" +
             "MaxMapTime\tMinMapTime\tAvgMapTime\tMedianMapTime\tMaxReduceTime\t" +
@@ -279,8 +279,8 @@ public final class MRJobStats extends JobStats {
             appendStat(avgReduceTime, sb);
             appendStat(medianReduceTime, sb);
 
-            sb.append(getAlias()).append("\t")
-                .append(getFeature()).append("\t");
+            sb.append(getAlias().replace(",", "|")).append("\t")
+                .append(getFeature().replace(",", "|")).append("\t");
         }
         for (OutputStats os : outputs) {
             sb.append(os.getLocation()).append(",");
