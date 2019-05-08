@@ -55,6 +55,42 @@ import org.apache.pig.tools.pigstats.OutputStats;
 import org.apache.pig.tools.pigstats.PigStats;
 import org.apache.pig.tools.pigstats.JobStats;
 
+/*KARIZ B*/
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.apache.http.HttpResponse;
+import org.apache.http.NameValuePair;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.message.BasicNameValuePair;
+import java.net.URI;
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.utils.URIBuilder;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.util.EntityUtils;
+
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.ContentType;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.message.BasicHeader; 
+/*KARIZ E*/
+
+
+
+
 /**
  * SimplePigStats encapsulates the statistics collected from a running script.
  * It includes status of the execution, the DAG of its MR jobs, as well as
@@ -216,21 +252,23 @@ public final class SimplePigStats extends PigStats {
     
     /*KARIZ B*/
     void dumpStats() {
-        try {	
-	    String sentence;
-	    String modifiedSentence;
-	    Socket clientSocket = new Socket("sp-hd-1", 4964);
-	    DataOutputStream outToServer = new DataOutputStream(clientSocket.getOutputStream());
-	    BufferedReader inFromServer = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
-	    sentence = getCSVString();
-            outToServer.writeBytes("lenght:" + sentence.length());
-	    modifiedSentence = inFromServer.readLine();
-            System.out.println(sentence);
-	    outToServer.writeBytes(sentence); 
-	    modifiedSentence = inFromServer.readLine();
-            if (modifiedSentence == "done") {
-	    	clientSocket.close();
-	    }
+        try {
+            HttpClient httpclient = HttpClients.createDefault();
+            HttpPost httppost = new HttpPost("http://kariz-1:5000/api/statistics");
+    
+            /* Request parameters and other properties.*/
+
+            httppost.setHeader("Content-Type", "text/plain");
+            httppost.setHeader("Accept", "text/plain");
+
+            StringEntity entity = new StringEntity(getCSVString(), "UTF8");
+            entity.setContentType("text/plain");
+            httppost.setEntity(entity);
+
+            //Execute and get the response.
+            HttpResponse response = httpclient.execute(httppost);
+            System.out.println(response.getStatusLine().getStatusCode());
+
         } catch (IOException e) 
         {
              System.out.println(e.getMessage());

@@ -106,6 +106,40 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
+
+
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.apache.http.HttpResponse;
+import org.apache.http.NameValuePair;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.message.BasicNameValuePair;
+import java.net.URI;
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.utils.URIBuilder;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.util.EntityUtils;
+
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.ContentType;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.message.BasicHeader;
+
+
 /*KARIZ E*/
 
 
@@ -182,6 +216,31 @@ public class MapReduceLauncher extends Launcher {
         return failureMap.get(spec);
     }
 
+    /* KARIZ B*/
+    public void notifyKarizByPIGStage(int stageId) {
+        try {
+            HttpClient httpclient = HttpClients.createDefault();
+            HttpPost httppost = new HttpPost("http://kariz-1:5000/api/newstage");
+
+            /* Request parameters and other properties.*/
+            httppost.setHeader("Content-Type", "text/plain");
+            httppost.setHeader("Accept", "text/plain");
+
+            StringEntity entity = new StringEntity("stageId:" + Integer.toString(stageId), "UTF8");
+            entity.setContentType("text/plain");
+            httppost.setEntity(entity);
+
+            //Execute and get the response.
+	    HttpResponse response = httpclient.execute(httppost);
+	    System.out.println(response.getStatusLine().getStatusCode());
+
+	} catch (IOException e)
+	{
+		System.out.println(e.getMessage());
+	}
+    }
+    /* KARIZ E*/
+
     @Override
     public PigStats launchPig(PhysicalPlan php,
             String grpName,
@@ -235,6 +294,11 @@ public class MapReduceLauncher extends Launcher {
         boolean stop_on_failure =
             Boolean.valueOf(pc.getProperties().getProperty("stop.on.failure", "false"));
         boolean stoppedOnFailure = false;
+
+        /*KARIZ B*/
+        int stageId = 0;
+        /*KARIZ E*/
+        
 
         // jc is null only when mrp.size == 0
         while(mrp.size() != 0 && !stoppedOnFailure) {
@@ -301,7 +365,8 @@ public class MapReduceLauncher extends Launcher {
 
                 //jobTrackerLoc = jobTrackerAdd.substring(0,jobTrackerAdd.indexOf(":"))
                 //        + port.substring(port.indexOf(":"));
-                jobTrackerLoc="sp-hd-1:50030";
+                //        KARIZ
+                jobTrackerLoc="kariz-1:50030";
             }
             catch(Exception e){
                 // Could not get the job tracker location, most probably we are running in local mode.
@@ -336,10 +401,14 @@ public class MapReduceLauncher extends Launcher {
                         Long.toString(System.currentTimeMillis()));
                 job.setJobConf(jobConfCopy);
             }
-
+            
             //All the setup done, now lets launch the jobs.
             jcThread.start();
-
+            /*KARIZ B*/
+            /*Inform KARIZ about stage */
+            notifyKarizByPIGStage(stageId);
+            stageId = stageId + 1;
+            /*KARIZ E*/
             try {
                 // a flag whether to warn failure during the loop below, so users can notice failure earlier.
                 boolean warn_failure = true;
@@ -667,7 +736,7 @@ public class MapReduceLauncher extends Launcher {
 
     /*KARIZ B*/
     public void AlertCache(MROperPlan plan) {
-	    String url = "http://127.0.0.1:9080";
+	    String url = "http://kariz-1:5000";
 	    String USER_AGENT = "Mozilla/5.0";
 
 	    HttpClient client = new DefaultHttpClient();
