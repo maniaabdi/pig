@@ -459,8 +459,9 @@
     <dependency org="org.apache.hbase.thirdparty" name="hbase-shaded-miscellaneous" rev="2.1.0" conf="hbase2->master" />
 
     <dependency org="org.apache.hbase.thirdparty" name="hbase-shaded-netty" rev="2.1.0" conf="hbase2->master" />
-    <dependency org="org.json" name="org.json" rev="chargebee-1.0"/>
+
     <dependency org="org.apache.hbase.thirdparty" name="hbase-shaded-protobuf" rev="2.1.0" conf="hbase2->master" />
+
     <dependency org="org.eclipse.jetty" name="jetty-http" rev="9.3.20.v20170531" conf="hbase2->master"/>
     <dependency org="org.eclipse.jetty" name="jetty-io" rev="9.3.20.v20170531" conf="hbase2->master"/>
     <dependency org="org.eclipse.jetty" name="jetty-security" rev="9.3.20.v20170531" conf="hbase2->master"/>
