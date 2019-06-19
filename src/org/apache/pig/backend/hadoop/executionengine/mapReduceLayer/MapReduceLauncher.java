@@ -735,42 +735,25 @@ public class MapReduceLauncher extends Launcher {
     }
 
     /*KARIZ B*/
-    public void AlertCache(MROperPlan plan) {
-	    String url = "http://kariz-1:5000";
-	    String USER_AGENT = "Mozilla/5.0";
+    public void notifyKarizbyDAG(MROperPlan plan) {
+	    try {
+		    HttpClient httpclient = HttpClients.createDefault();
+            	    HttpPost httppost = new HttpPost("http://kariz-1:5000/api/newdag");
 
-	    HttpClient client = new DefaultHttpClient();
-	    HttpPost post = new HttpPost(url);
+                    /* Request parameters and other properties.*/
+                    httppost.setHeader("Content-Type", "text/plain");
+                    httppost.setHeader("Accept", "text/plain");
 
-	    // add header
-	    post.setHeader("User-Agent", USER_AGENT);
+                    StringEntity entity = new StringEntity("DAG:\n" + plan.toString(), "UTF8");
+                    entity.setContentType("text/plain");
+                    httppost.setEntity(entity);
 
-	    List<NameValuePair> urlParameters = new ArrayList<NameValuePair>();
-	    urlParameters.add(new BasicNameValuePair("dag", plan.toString()));
-
-
-            try {
-		post.setEntity(new UrlEncodedFormEntity(urlParameters));
-
-		HttpResponse response = client.execute(post);
-		System.out.println("\nSending 'POST' request to URL : " + url);
-		System.out.println("Post parameters : " + post.getEntity());
-		System.out.println("Response Code : " +
-				response.getStatusLine().getStatusCode());
-
-		BufferedReader rd = new BufferedReader(
-				new InputStreamReader(response.getEntity().getContent()));
-
-		StringBuffer result = new StringBuffer();
-		String line = "";
-		while ((line = rd.readLine()) != null) {
-			result.append(line);
-		}
-
-		System.out.println(result.toString());
-            } catch(Exception e) {
-        	System.out.println("ERROR" + e.toString());
-    	    }
+                    //Execute and get the response.
+                    HttpResponse response = httpclient.execute(httppost);
+                    System.out.println(response.getStatusLine().getStatusCode());
+	    } catch (IOException e) {
+		    System.out.println(e.getMessage());
+	    }
     }
     /*KARIZ E*/
 
@@ -787,7 +770,7 @@ public class MapReduceLauncher extends Launcher {
 	//BufferedWriter writer = new BufferedWriter(new FileWriter("/tmp/executionplan.txt", true));
 	//writer.append(plan.toString());
         //writer.close();
-        AlertCache(plan);
+        notifyKarizbyDAG(plan);
         /*KARIZ E*/
 
         //display the warning message(s) from the MRCompiler
