@@ -72,6 +72,18 @@ public abstract class PigStats {
     protected Throwable errorThrowable = null;
     protected int returnCode = ReturnCode.UNKNOWN;
 
+
+    private static String dag_id = "";
+    /*KARIZ B*/
+    public static void addDag(String id) {
+        dag_id = id;
+    }
+    public static String getDagId() {
+        return dag_id;
+    }
+    /*KARIZ E*/
+
+
     public static PigStats get() {
         return tps.get();
     }

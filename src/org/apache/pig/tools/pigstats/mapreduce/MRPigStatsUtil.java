@@ -53,6 +53,7 @@ public class MRPigStatsUtil extends PigStatsUtil {
             = "org.apache.hadoop.mapreduce.FileSystemCounter";
 
     private static final Log LOG = LogFactory.getLog(MRPigStatsUtil.class);
+    private String dag_id = "";
 
     /**
      * Returns the count for the given counter name in the counter group
@@ -116,6 +117,17 @@ public class MRPigStatsUtil extends PigStatsUtil {
                 ps.getNumberSuccessfulJobs());
         if (display) ps.display();
     }
+
+    /*KARIZ B*/
+    public void addDag(String id) {
+	dag_id = id;
+    }
+
+    public String getDagId() {
+	return dag_id;
+    }
+    /*KARIZ E*/
+
 
     /**
      * Add stats for a new Job, which doesn't yet need to be completed.

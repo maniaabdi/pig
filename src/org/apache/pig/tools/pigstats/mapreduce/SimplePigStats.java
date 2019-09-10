@@ -261,7 +261,7 @@ public final class SimplePigStats extends PigStats {
             httppost.setHeader("Content-Type", "text/plain");
             httppost.setHeader("Accept", "text/plain");
 
-            StringEntity entity = new StringEntity(getCSVString(), "UTF8");
+            StringEntity entity = new StringEntity("DAG:" + getDagId() + "\n"+getCSVString(), "UTF8");
             entity.setContentType("text/plain");
             httppost.setEntity(entity);
 

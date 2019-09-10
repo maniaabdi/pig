@@ -274,6 +274,7 @@ public class MapReduceLauncher extends Launcher {
 
         // start collecting statistics
         PigStats.start(pc.getExecutionEngine().instantiatePigStats());
+	PigStats.addDag(dag_id);
         MRPigStatsUtil.startCollection(pc, statsJobClient, jcc, mrp);
 
         // Find all the intermediate data stores. The plan will be destroyed during compile/execution
