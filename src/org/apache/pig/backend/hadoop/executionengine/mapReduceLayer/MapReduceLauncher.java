@@ -139,6 +139,7 @@ import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.message.BasicHeader;
 
+import java.util.UUID;
 
 /*KARIZ E*/
 
@@ -155,6 +156,8 @@ public class MapReduceLauncher extends Launcher {
     private static final Log log = LogFactory.getLog(MapReduceLauncher.class);
 
     private boolean aggregateWarning = false;
+
+    private String dag_id = "";
 
     public MapReduceLauncher() {
         super();
@@ -226,7 +229,7 @@ public class MapReduceLauncher extends Launcher {
             httppost.setHeader("Content-Type", "text/plain");
             httppost.setHeader("Accept", "text/plain");
 
-            StringEntity entity = new StringEntity("stageId:" + Integer.toString(stageId), "UTF8");
+            StringEntity entity = new StringEntity("{'id': '" + dag_id + "', 'stage':" + Integer.toString(stageId) + "}", "UTF8");
             entity.setContentType("text/plain");
             httppost.setEntity(entity);
 
@@ -744,7 +747,7 @@ public class MapReduceLauncher extends Launcher {
                     httppost.setHeader("Content-Type", "text/plain");
                     httppost.setHeader("Accept", "text/plain");
 
-                    StringEntity entity = new StringEntity("DAG:\n" + plan.toString(), "UTF8");
+                    StringEntity entity = new StringEntity("DAG:'" + dag_id + "'\n" + plan.toString(), "UTF8");
                     entity.setContentType("text/plain");
                     httppost.setEntity(entity);
 
@@ -767,9 +770,8 @@ public class MapReduceLauncher extends Launcher {
         MROperPlan plan = comp.getMRPlan();
 
         /*KARIZ B*/
-	//BufferedWriter writer = new BufferedWriter(new FileWriter("/tmp/executionplan.txt", true));
-	//writer.append(plan.toString());
-        //writer.close();
+        UUID suuid = UUID.randomUUID();
+	dag_id = suuid.toString(); 
         notifyKarizbyDAG(plan);
         /*KARIZ E*/
 
