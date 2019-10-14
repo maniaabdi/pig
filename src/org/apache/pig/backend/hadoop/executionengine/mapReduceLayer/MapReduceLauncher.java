@@ -223,7 +223,7 @@ public class MapReduceLauncher extends Launcher {
     public void notifyKarizByPIGStage(int stageId) {
         try {
             HttpClient httpclient = HttpClients.createDefault();
-            HttpPost httppost = new HttpPost("http://kariz-1:5000/api/newstage");
+            HttpPost httppost = new HttpPost("http://kariz-1:3188/api/newstage");
 
             /* Request parameters and other properties.*/
             httppost.setHeader("Content-Type", "text/plain");
@@ -742,7 +742,7 @@ public class MapReduceLauncher extends Launcher {
     public void notifyKarizbyDAG(MROperPlan plan) {
 	    try {
 		    HttpClient httpclient = HttpClients.createDefault();
-            	    HttpPost httppost = new HttpPost("http://kariz-1:5000/api/newdag");
+            	    HttpPost httppost = new HttpPost("http://kariz-1:3188/api/newdag");
 
                     /* Request parameters and other properties.*/
                     httppost.setHeader("Content-Type", "text/plain");

@@ -254,7 +254,7 @@ public final class SimplePigStats extends PigStats {
     void dumpStats() {
         try {
             HttpClient httpclient = HttpClients.createDefault();
-            HttpPost httppost = new HttpPost("http://kariz-1:5000/api/statistics");
+            HttpPost httppost = new HttpPost("http://kariz-1:3188/api/statistics");
     
             /* Request parameters and other properties.*/
 
